@@ -1,3 +1,5 @@
+import java.awt.GridLayout;
+
 import javax.swing.BoxLayout;
 
 import edu.wpi.first.smartdashboard.gui.StaticWidget;
