@@ -18,6 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import org.w3c.dom.css.RGBColor;
+
 import edu.wpi.first.smartdashboard.gui.GlassPane;
 import edu.wpi.first.smartdashboard.gui.elements.Button;
 import edu.wpi.first.smartdashboard.gui.elements.bindings.AbstractTableWidget;
@@ -37,6 +39,7 @@ public class Selector extends JPanel implements ActionListener {
 	JButton noBall = new JButton("0 Ball!");
 	JButton delay = new JButton("Delay");
 	JButton noDelayButton = new JButton("No Delay");
+	JButton reset;
 
 	JComponent column1;
 	JComponent column2;
@@ -89,7 +92,7 @@ public class Selector extends JPanel implements ActionListener {
 
 
 		setLayout(new GridLayout(1,5));
-		setBackground(Color.GREEN);
+		setBackground(new Color(119,12,133));
 		this.setPreferredSize(new Dimension(1000, 500));
 
 		column1.setLayout(new GridLayout(2, 1));
@@ -125,6 +128,10 @@ public class Selector extends JPanel implements ActionListener {
 		//column4.add(gb2);
 		//column4.add(defenseToCross);
 
+		reset = new JButton();
+		reset.addActionListener(this);
+		reset.setText("Reset");
+		add(reset);
 		add(column1);
 		add(column2);
 		add(column3);
@@ -148,9 +155,6 @@ public class Selector extends JPanel implements ActionListener {
 			if (columnToBePressed == 1) {
 				// one or two ball
 				if (e.getSource() == oneBall) {
-					for(JButton jb : allowed){
-						jb.setEnabled(false);
-					}
 					removeAllinAllowed();
 					gl.setRows(2);
 					column2.setLayout(gl);
@@ -166,9 +170,6 @@ public class Selector extends JPanel implements ActionListener {
 				
 			} else if (columnToBePressed == 2) {
 				if (e.getSource() == steal) {
-					for(JButton jb : allowed){
-						jb.setEnabled(false);
-					}
 					removeAllinAllowed();
 					gl.setRows(6);
 					column3.setLayout(gl);
@@ -212,7 +213,24 @@ public class Selector extends JPanel implements ActionListener {
 				System.out.println("Successful col 3 click reg");
 			}
 
-		} else {
+		}else if(e.getSource() == reset){
+			column2.removeAll();
+			column3.removeAll();
+			column4.removeAll();
+			column5.removeAll();
+			column2.validate();
+			column3.validate();
+			column4.validate();
+			column5.validate();
+			oneBall.setEnabled(true);
+			twoBall.setEnabled(true);
+			allowed.add(oneBall);
+			allowed.add(twoBall);
+			columnToBePressed = 1;
+			updateGraphics();
+			System.out.println("Reset bruh");
+			
+		}else {
 			System.out.println("invalid button press bitch");
 		}
 	}
