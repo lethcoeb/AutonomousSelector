@@ -18,11 +18,11 @@ public class GridOButtons extends JComponent {
 	int m_column;
 	ArrayList<JButton> jbList;
 	
-	public GridOButtons(int column){
-		m_column = column;
+	public GridOButtons(int numberOfButtons){
+		m_column = numberOfButtons;
 		jPanel = new JPanel();
 		jbList = new ArrayList<JButton>();
-		addButtons(column);
+		addButtons(numberOfButtons);
 		update();
 	}
 	

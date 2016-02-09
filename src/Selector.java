@@ -55,6 +55,9 @@ public class Selector extends JPanel implements ActionListener {
 	GridOButtons defenseToCross;
 
 	ArrayList<JButton> allowed;
+	
+	Boolean goodToSend;
+	
 
 	int columnToBePressed = 1;
 
@@ -181,7 +184,8 @@ public class Selector extends JPanel implements ActionListener {
 					}
 				} else if (e.getSource() == noSteal) {
 					removeAllinAllowed();
-					allowed.add(delay);
+					addButton(delay, column3);
+					addButton(noDelayButton, column3);
 					allowed.add(noDelayButton);
 					System.out.println("added delay and noDelay to allowed buttons");
 				}
@@ -192,15 +196,25 @@ public class Selector extends JPanel implements ActionListener {
 			} else if (columnToBePressed == 3) {
 				if (e.getSource() == delay) {
 					removeAllinAllowed();
+					gl.setRows(5);
+					column4.setLayout(gl);
+					for(JButton jb : oneBallDefenseTarget.jbList){
+						addButton(jb, column4);
+					}
 					// allowed.add()
 				} else if (e.getSource() == noDelayButton) {
 					removeAllinAllowed();
+					gl.setRows(5);
+					column4.setLayout(gl);
+					for(JButton jb : oneBallDefenseTarget.jbList){
+						addButton(jb, column4);
+					}
 				}else if(ballToStealButtons.jbList.contains((e.getSource()))){
 					removeAllinAllowed();
 					gl.setRows(5);
 					column4.setLayout(gl);
 					for(JButton jb : oneBallNoStealReturnTarget.jbList){
-						column4.add(jb);
+						addButton(jb, column4);
 					}
 				}
 				updateGraphics();
@@ -208,9 +222,23 @@ public class Selector extends JPanel implements ActionListener {
 				System.out.println("Successful col 3 click reg");
 
 			}else if(columnToBePressed == 4){
+				if (oneBallNoStealReturnTarget.jbList.contains((e.getSource()))) {
+					removeAllinAllowed();
+					gl.setRows(5);
+					column5.setLayout(gl);
+					for(JButton jb : oneBallNoStealReturnTarget.jbList){
+						addButton(jb, column5);
+					}
+				}
 				updateGraphics();
 				columnToBePressed = 4;
 				System.out.println("Successful col 3 click reg");
+			}else if (columnToBePressed == 5){
+				//set listeners for last column here
+				//you'd add the 'true' terminator, for the able to be sent boolean
+				/*if(){
+					
+				}*/
 			}
 
 		}else if(e.getSource() == reset){
@@ -231,7 +259,7 @@ public class Selector extends JPanel implements ActionListener {
 			System.out.println("Reset bruh");
 			
 		}else {
-			System.out.println("invalid button press bitch");
+			System.out.println("invalid button press");
 		}
 	}
 	
