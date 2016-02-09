@@ -51,12 +51,15 @@ public class Selector extends JPanel implements ActionListener {
 	GridOButtons ballToStealButtons;
 	GridOButtons oneBallDefenseTarget;
 	GridOButtons oneBallNoStealReturnTarget;
+	GridOButtons oneBallNoStealEndPosition;
 
 	GridOButtons defenseToCross;
 
 	ArrayList<JButton> allowed;
 	
 	Boolean goodToSend;
+	
+	String networkTablesString;
 	
 
 	int columnToBePressed = 1;
@@ -91,6 +94,8 @@ public class Selector extends JPanel implements ActionListener {
 		ballToStealButtons = new GridOButtons(5);
 		oneBallDefenseTarget = new GridOButtons(4);
 		oneBallNoStealReturnTarget = new GridOButtons(4);
+		
+		oneBallNoStealEndPosition = new GridOButtons(4); //We gonna need to fix this
 		//defenseToCross = new GridOButtons(4, column);
 
 
@@ -147,7 +152,6 @@ public class Selector extends JPanel implements ActionListener {
 		noSteal.addActionListener(this);
 		delay.addActionListener(this);
 		noDelayButton.addActionListener(this);
-
 	}
 
 	@Override
@@ -206,14 +210,16 @@ public class Selector extends JPanel implements ActionListener {
 					removeAllinAllowed();
 					gl.setRows(5);
 					column4.setLayout(gl);
-					for(JButton jb : oneBallDefenseTarget.jbList){
-						addButton(jb, column4);
+					for(JButton jbut : oneBallDefenseTarget.jbList){
+						jbut.addActionListener(this);
+						System.out.println("Added Button: " + jbut.getText());
+						addButton(jbut, column4);
 					}
 				}else if(ballToStealButtons.jbList.contains((e.getSource()))){
 					removeAllinAllowed();
 					gl.setRows(5);
 					column4.setLayout(gl);
-					for(JButton jb : oneBallNoStealReturnTarget.jbList){
+					for(JButton jb : oneBallDefenseTarget.jbList){
 						addButton(jb, column4);
 					}
 				}
@@ -222,23 +228,23 @@ public class Selector extends JPanel implements ActionListener {
 				System.out.println("Successful col 3 click reg");
 
 			}else if(columnToBePressed == 4){
-				if (oneBallNoStealReturnTarget.jbList.contains((e.getSource()))) {
+				if(oneBallDefenseTarget.jbList.contains((e.getSource()))){
 					removeAllinAllowed();
 					gl.setRows(5);
 					column5.setLayout(gl);
-					for(JButton jb : oneBallNoStealReturnTarget.jbList){
+					for(JButton jb : oneBallNoStealEndPosition.jbList){
 						addButton(jb, column5);
 					}
 				}
+				columnToBePressed = 5;
 				updateGraphics();
-				columnToBePressed = 4;
-				System.out.println("Successful col 3 click reg");
+				System.out.println("Memes!");
 			}else if (columnToBePressed == 5){
-				//set listeners for last column here
-				//you'd add the 'true' terminator, for the able to be sent boolean
-				/*if(){
-					
-				}*/
+				System.out.println("I love memes in column 5");
+				if(oneBallNoStealEndPosition.jbList.contains(e.getSource())){
+					goodToSend = true;
+					System.out.println("activated!");
+				}
 			}
 
 		}else if(e.getSource() == reset){
