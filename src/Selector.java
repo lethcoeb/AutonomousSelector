@@ -26,7 +26,9 @@ import edu.wpi.first.smartdashboard.gui.elements.bindings.AbstractTableWidget;
 import edu.wpi.first.smartdashboard.gui.elements.bindings.AbstractTableWidget.BooleanTableCheckBox;
 import edu.wpi.first.smartdashboard.gui.elements.bindings.AbstractValueWidget.EditableBooleanValueCheckBox;
 import edu.wpi.first.smartdashboard.properties.*;
+import edu.wpi.first.smartdashboard.robot.Robot;
 import edu.wpi.first.smartdashboard.types.*;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 @SuppressWarnings("serial")
 
@@ -40,6 +42,9 @@ public class Selector extends JPanel implements ActionListener {
 	JButton delay = new JButton("Delay");
 	JButton noDelayButton = new JButton("No Delay");
 	JButton reset;
+	JButton send;
+	
+	Label l;
 
 	JComponent column1;
 	JComponent column2;
@@ -57,7 +62,7 @@ public class Selector extends JPanel implements ActionListener {
 
 	ArrayList<JButton> allowed;
 	
-	Boolean goodToSend;
+	Boolean goodToSend = false;
 	
 	String networkTablesString;
 	
@@ -139,7 +144,13 @@ public class Selector extends JPanel implements ActionListener {
 		reset = new JButton();
 		reset.addActionListener(this);
 		reset.setText("Reset");
+		send = new JButton();
+		send.addActionListener(this);
+		send.setText("Send Commands");
+		l = new Label();
+		add(l);
 		add(reset);
+		add(send);
 		add(column1);
 		add(column2);
 		add(column3);
@@ -152,6 +163,10 @@ public class Selector extends JPanel implements ActionListener {
 		noSteal.addActionListener(this);
 		delay.addActionListener(this);
 		noDelayButton.addActionListener(this);
+		
+		for(JButton j : oneBallNoStealEndPosition.jbList){
+			j.addActionListener(this);
+		}
 	}
 
 	@Override
@@ -167,9 +182,12 @@ public class Selector extends JPanel implements ActionListener {
 					column2.setLayout(gl);
 					addButton(steal, column2);
 					addButton(noSteal, column2);
+					networkTablesString = "OneBall:";
 				} else if (e.getSource() == twoBall) {
 					System.out.println("LIVING THE DREAM");
 					removeAllinAllowed();
+					networkTablesString = "TwoBall:";
+					goodToSend = true;
 				}
 				columnToBePressed = 2;
 				updateGraphics();
@@ -186,12 +204,14 @@ public class Selector extends JPanel implements ActionListener {
 						jbut.addActionListener(this);
 						System.out.println("Added Button: " + jbut.getText());
 					}
+					addToCommandString("Steal:");
 				} else if (e.getSource() == noSteal) {
 					removeAllinAllowed();
 					addButton(delay, column3);
 					addButton(noDelayButton, column3);
 					allowed.add(noDelayButton);
 					System.out.println("added delay and noDelay to allowed buttons");
+					addToCommandString("NoSteal:");
 				}
 				columnToBePressed = 3;
 				updateGraphics();
@@ -205,6 +225,7 @@ public class Selector extends JPanel implements ActionListener {
 					for(JButton jb : oneBallDefenseTarget.jbList){
 						addButton(jb, column4);
 					}
+					addToCommandString("Delay:");
 					// allowed.add()
 				} else if (e.getSource() == noDelayButton) {
 					removeAllinAllowed();
@@ -215,6 +236,7 @@ public class Selector extends JPanel implements ActionListener {
 						System.out.println("Added Button: " + jbut.getText());
 						addButton(jbut, column4);
 					}
+					addToCommandString("NoDelay:");
 				}else if(ballToStealButtons.jbList.contains((e.getSource()))){
 					removeAllinAllowed();
 					gl.setRows(5);
@@ -222,6 +244,13 @@ public class Selector extends JPanel implements ActionListener {
 					for(JButton jb : oneBallDefenseTarget.jbList){
 						addButton(jb, column4);
 					}
+					for(JButton j : ballToStealButtons.jbList){
+						if(j == e.getSource()){
+							addToCommandString(j.getText() + ":");
+							System.out.println(j.getText());
+						}
+					}
+					System.out.println("String test - should be integer:: " + e.getSource().toString());
 				}
 				updateGraphics();
 				columnToBePressed = 4;
@@ -235,6 +264,11 @@ public class Selector extends JPanel implements ActionListener {
 					for(JButton jb : oneBallNoStealEndPosition.jbList){
 						addButton(jb, column5);
 					}
+					for(JButton j : oneBallDefenseTarget.jbList){
+						if(j == e.getSource()){
+							addToCommandString(j.getText() + ":");
+						}
+					}
 				}
 				columnToBePressed = 5;
 				updateGraphics();
@@ -244,6 +278,11 @@ public class Selector extends JPanel implements ActionListener {
 				if(oneBallNoStealEndPosition.jbList.contains(e.getSource())){
 					goodToSend = true;
 					System.out.println("activated!");
+					for(JButton j : oneBallNoStealEndPosition.jbList){
+						if(j == e.getSource()){
+							addToCommandString(j.getText() + ":");
+						}
+					}
 				}
 			}
 
@@ -263,7 +302,16 @@ public class Selector extends JPanel implements ActionListener {
 			columnToBePressed = 1;
 			updateGraphics();
 			System.out.println("Reset bruh");
+			goodToSend = false;
 			
+		}else if(e.getSource() == send){
+			if(goodToSend){
+				//push to network tables
+				l.setText(networkTablesString);
+				updateGraphics();
+				NetworkTable.getTable(Robot.getTable().toString());
+				Robot.getTable().putString("CommandString", networkTablesString);
+			}
 		}else {
 			System.out.println("invalid button press");
 		}
@@ -281,6 +329,10 @@ public class Selector extends JPanel implements ActionListener {
 		column3.updateUI();
 		column4.updateUI();
 		column5.updateUI();
+	}
+	
+	public void addToCommandString(String s){
+		networkTablesString = networkTablesString + s;
 	}
 
 }
