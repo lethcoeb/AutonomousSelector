@@ -1,23 +1,10 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-
+import javax.swing.*;
+import java.awt.*;
 import org.w3c.dom.css.RGBColor;
 
 import edu.wpi.first.smartdashboard.gui.GlassPane;
@@ -44,13 +31,18 @@ public class Selector extends JPanel implements ActionListener {
 	JButton reset;
 	JButton send;
 
+	JFrame frame;
 	Label l;
+	
+	JComponent blah = new JComponent() {
+	};
 
 	JComponent column1;
 	JComponent column2;
 	JComponent column3;
 	JComponent column4;
 	JComponent column5;
+	JComponent wow;
 	GridLayout gl;
 
 	GridOButtons ballToStealButtons;
@@ -59,7 +51,10 @@ public class Selector extends JPanel implements ActionListener {
 	GridOButtons oneBallNoStealEndPosition;
 
 	GridOButtons defenseToCross;
-
+	GridBagConstraints hellohello = new GridBagConstraints();
+	JTextArea debug = new JTextArea("Hi memers!");
+	JLabel label = new JLabel("What a meme for debugging!");
+	
 	ArrayList<JButton> allowed;
 
 	Boolean goodToSend = false;
@@ -84,6 +79,9 @@ public class Selector extends JPanel implements ActionListener {
 		allowed.add(oneBall);
 		allowed.add(twoBall);
 
+			
+		wow = new JComponent() {
+		};
 		column1 = new JComponent() {
 		};
 		column2 = new JComponent() {
@@ -116,26 +114,18 @@ public class Selector extends JPanel implements ActionListener {
 		column3.setLayout(gl);
 		column4.setLayout(gl);
 		column5.setLayout(gl);
+		wow.setLayout(new GridBagLayout());
 
-		// column2.setLayout(new GridLayout(4, 1));
-		// column2.add(steal);
-		// column2.add(noSteal);
 
-		// column3.setLayout(new GridLayout(4, 1));
-		/*
-		 * JComponent ballToSteal = new JComponent() { }; Label ballToStealLabel
-		 * = new Label("Ball To Steal"); ballToStealLabel.setMaximumSize(new
-		 * Dimension(200, 25)); BoxLayout bxLyt1 = new BoxLayout(ballToSteal,
-		 * BoxLayout.Y_AXIS); ballToSteal.setLayout(bxLyt1);
-		 * ballToSteal.add(ballToStealLabel);
-		 * ballToSteal.add(ballToStealButtons); column3.add(ballToSteal);
-		 * column3.add(gb3);
-		 */
-
-		// column4.setLayout(new GridLayout(4, 1));
-		// column4.add(gb2);
-		// column4.add(defenseToCross);
-
+		hellohello.gridx = 0;
+		hellohello.gridy = 0;
+		
+		//c.fill = GridBagConstraints.HORIZONTAL;
+		hellohello.weightx = 0.5;
+		hellohello.gridx = 1;
+		hellohello.gridy = 0;
+		
+		
 		reset = new JButton();
 		reset.addActionListener(this);
 		reset.setText("Reset");
@@ -168,7 +158,10 @@ public class Selector extends JPanel implements ActionListener {
 			j.addActionListener(this);
 		}
 	}
-
+	
+	
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
@@ -262,9 +255,7 @@ public class Selector extends JPanel implements ActionListener {
 				}
 				columnToBePressed = 5;
 				updateGraphics();
-				System.out.println("Memes!");
 			} else if (columnToBePressed == 5) {
-				System.out.println("I love memes in column 5");
 				if (oneBallNoStealEndPosition.jbList.contains(e.getSource())) {
 					removeAllinAllowed();
 					goodToSend = true;
