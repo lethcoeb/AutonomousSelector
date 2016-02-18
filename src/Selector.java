@@ -32,26 +32,42 @@ public class Selector extends JPanel implements ActionListener {
 	JButton send;
 
 	JFrame frame;
-	Label l;
+	JLabel l = new JLabel("if there would be no tidal how do i get tlop");
+	
 	
 	JComponent blah = new JComponent() {
 	};
 
-	JComponent column1;
-	JComponent column2;
-	JComponent column3;
-	JComponent column4;
-	JComponent column5;
-	JComponent wow;
-	GridLayout gl;
+	GridBagConstraints constraints = new GridBagConstraints();
 
+	GridLayout gl;
+	JComponent rowone = new JComponent() {
+	};
+	JComponent rowtwo = new JComponent() {
+	};
+	JComponent rowthree = new JComponent() {
+	};
+	JComponent column1 = new JComponent() {
+	};
+	JComponent column2 = new JComponent() {
+	};
+	JComponent column3 = new JComponent() {
+	};
+	JComponent column4 = new JComponent() {
+	};
+	JComponent column5 = new JComponent() {
+	};
+	
 	GridOButtons ballToStealButtons;
 	GridOButtons oneBallDefenseTarget;
 	GridOButtons oneBallNoStealReturnTarget;
 	GridOButtons oneBallNoStealEndPosition;
+    
+	final static boolean shouldFill = true;
+    final static boolean shouldWeightX = true;
+    final static boolean RIGHT_TO_LEFT = false;
 
 	GridOButtons defenseToCross;
-	GridBagConstraints hellohello = new GridBagConstraints();
 	JTextArea debug = new JTextArea("Hi memers!");
 	JLabel label = new JLabel("What a meme for debugging!");
 	
@@ -71,27 +87,28 @@ public class Selector extends JPanel implements ActionListener {
 			System.out.println("Removed an item");
 		}
 	}
-
+	
 	public Selector() {
-
+        if (RIGHT_TO_LEFT) {
+            this.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        }
+		
+		   this.setLayout(new GridBagLayout());
+			GridBagConstraints c = new GridBagConstraints();
+			if (shouldFill) {
+			//natural height, maximum width
+			//c.fill = GridBagConstraints.HORIZONTAL;
+			}
+		   
 		allowed = new ArrayList<JButton>();
 
+		rowone.setLayout(new GridLayout(1, 2));
+		rowtwo.setLayout(new GridLayout(1, 5));
+		rowthree.setLayout(new GridLayout(1, 2));		
+		
 		allowed.add(oneBall);
 		allowed.add(twoBall);
-
-			
-		wow = new JComponent() {
-		};
-		column1 = new JComponent() {
-		};
-		column2 = new JComponent() {
-		};
-		column3 = new JComponent() {
-		};
-		column4 = new JComponent() {
-		};
-		column5 = new JComponent() {
-		};
+		
 
 		ballToStealButtons = new GridOButtons(5);
 		oneBallDefenseTarget = new GridOButtons(4);
@@ -101,30 +118,24 @@ public class Selector extends JPanel implements ActionListener {
 															// this
 		// defenseToCross = new GridOButtons(4, column);
 
-		setLayout(new GridLayout(1, 5));
+		this.setLayout(new GridBagLayout());
 		setBackground(new Color(119, 12, 133));
 		this.setPreferredSize(new Dimension(1000, 500));
 
-		column1.setLayout(new GridLayout(2, 1));
+		
+		column1.setLayout(new GridLayout(3, 0));
+		column2.setLayout(new GridLayout(3, 0));
+		column1.add(new JLabel("Pick a ball"));
 		column1.add(oneBall);
 		column1.add(twoBall);
 
-		gl = new GridLayout();
+		gl = new GridLayout(0,2);
 		column2.setLayout(gl);
 		column3.setLayout(gl);
 		column4.setLayout(gl);
 		column5.setLayout(gl);
-		wow.setLayout(new GridBagLayout());
 
 
-		hellohello.gridx = 0;
-		hellohello.gridy = 0;
-		
-		//c.fill = GridBagConstraints.HORIZONTAL;
-		hellohello.weightx = 0.5;
-		hellohello.gridx = 1;
-		hellohello.gridy = 0;
-		
 		
 		reset = new JButton();
 		reset.addActionListener(this);
@@ -133,16 +144,50 @@ public class Selector extends JPanel implements ActionListener {
 		send.addActionListener(this);
 		send.setEnabled(false);
 		send.setText("Send Commands");
-		l = new Label();
-		add(l);
-		add(reset);
-		add(send);
-		add(column1);
-		add(column2);
-		add(column3);
-		add(column4);
-		add(column5);
+		
+		c.weightx = 0.5;
+		c.weighty = 1;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.insets = new Insets(0, 0, 0, 2);
+		column1.setLayout(new GridLayout(3, 1));
+		/////////////////////////
+		rowone.add(l);
+		rowone.add(debug);
+		this.add(rowone,c);
+		/////////////////////////
+		//reset.setPreferredSize(new Dimension(50, 150));
+		rowthree.add(reset);
+		rowthree.add(send);
+		/////////////////////////
+		c.fill = GridBagConstraints.VERTICAL;
+		rowtwo.add(column1, c);
+		rowtwo.add(column2, c);
+		rowtwo.add(column3, c);
+		rowtwo.add(column4, c);
+		rowtwo.add(column5, c);
+		/////////////////////////
 
+		
+		//c.gridheight = 5000;
+		//c.fill = GridBagConstraints.HORIZONTAL;
+ 		//c.fill = GridBagConstraints.VERTICAL;
+		
+		c.fill = GridBagConstraints.VERTICAL;
+		c.ipady = 10;      
+		c.weightx = 2.0;
+		c.weighty = 1;
+		c.gridwidth = 3;
+		c.gridx = 0;
+		c.gridy = 1;
+		
+		this.add(rowtwo,c);
+		
+		c.gridy = 2;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		
+		this.add(rowthree,c);
+		
 		oneBall.addActionListener(this);
 		twoBall.addActionListener(this);
 		steal.addActionListener(this);
@@ -171,8 +216,10 @@ public class Selector extends JPanel implements ActionListener {
 				// one or two ball
 				if (e.getSource() == oneBall) {
 					removeAllinAllowed();
-					gl.setRows(2);
-					column2.setLayout(gl);
+					//Set rows to number of buttons plus one to accommodate label
+					//gl.setRows(3);
+					column2.setLayout(new GridLayout(3, 1));
+					column2.add(new JLabel("You wanna steallllll?"));
 					addButton(steal, column2);
 					addButton(noSteal, column2);
 					networkTablesString = "OneBall:";
@@ -190,8 +237,9 @@ public class Selector extends JPanel implements ActionListener {
 			} else if (columnToBePressed == 2) {
 				if (e.getSource() == steal) {
 					removeAllinAllowed();
-					gl.setRows(6);
-					column3.setLayout(gl);
+					gl.setRows(7);
+					column3.setLayout(new GridLayout(7, 1));
+					column3.add(new JLabel("Which ball yall want?"));
 					for (JButton jbut : ballToStealButtons.jbList) {
 						// add all 6 ball buttons
 						addButton(jbut, column3);
@@ -201,6 +249,9 @@ public class Selector extends JPanel implements ActionListener {
 					addToCommandString("Steal:");
 				} else if (e.getSource() == noSteal) {
 					removeAllinAllowed();
+					gl.setRows(3);
+					column3.setLayout(new GridLayout(3, 1));
+					column3.add(new JLabel("Delay or nah?"));
 					addButton(delay, column3);
 					addButton(noDelayButton, column3);
 					System.out.println("added delay and noDelay to allowed buttons");
@@ -211,20 +262,33 @@ public class Selector extends JPanel implements ActionListener {
 				System.out.println("Successful col 2 click reg");
 
 			} else if (columnToBePressed == 3) {
-				if (e.getSource() == noDelayButton || e.getSource() == delay) {
+				if (e.getSource() == delay) {
 					removeAllinAllowed();
 					gl.setRows(5);
-					column4.setLayout(gl);
+					column4.setLayout(new GridLayout(6, 1));
+					column4.add(new JLabel("Shoot pos?"));
 					for (JButton jbut : oneBallDefenseTarget.jbList) {
 						jbut.addActionListener(this);
 						System.out.println("Added Button: " + jbut.getText());
 						addButton(jbut, column4);
+						addToCommandString("Delay:");
 					}
-					addToCommandString("NoDelay:");
+				}else if (e.getSource() == noDelayButton) {
+						removeAllinAllowed();
+						gl.setRows(5);
+						column4.setLayout(new GridLayout(6, 1));
+						column4.add(new JLabel("Shoot pos?"));
+						for (JButton jbut : oneBallDefenseTarget.jbList) {
+							jbut.addActionListener(this);
+							System.out.println("Added Button: " + jbut.getText());
+							addButton(jbut, column4);
+							addToCommandString("NoDelay:");
+						}
 				} else if (ballToStealButtons.jbList.contains((e.getSource()))) {
 					removeAllinAllowed();
-					gl.setRows(5);
+					gl.setRows(6);
 					column4.setLayout(gl);
+					column4.add(new JLabel("What defense you want?"));
 					for (JButton jb : oneBallDefenseTarget.jbList) {
 						addButton(jb, column4);
 					}
@@ -242,8 +306,9 @@ public class Selector extends JPanel implements ActionListener {
 			} else if (columnToBePressed == 4) {
 				if (oneBallDefenseTarget.jbList.contains((e.getSource()))) {
 					removeAllinAllowed();
-					gl.setRows(5);
-					column5.setLayout(gl);
+					gl.setRows(7);
+					column5.setLayout(new GridLayout(7, 1));
+					column5.add(new JLabel("Where do you want to end?"));
 					for (JButton jb : oneBallNoStealEndPosition.jbList) {
 						addButton(jb, column5);
 					}
