@@ -1,9 +1,13 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.Border;
 import java.awt.*;
 import org.w3c.dom.css.RGBColor;
 
@@ -20,7 +24,10 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 @SuppressWarnings("serial")
 
 public class Selector extends JPanel implements ActionListener {
-
+	/////////////////////////////////////////////////
+	ArrayList<JButton> highlightButtons = new ArrayList<JButton>();
+	ArrayList<JButton> allowed;
+	/////////////////////////////////////////////////
 	JButton oneBall = new JButton("One Ball");
 	JButton twoBall = new JButton("Two Ball");
 	JButton steal = new JButton("Steal");
@@ -28,19 +35,25 @@ public class Selector extends JPanel implements ActionListener {
 	JButton noBall = new JButton("0 Ball!");
 	JButton delay = new JButton("Delay");
 	JButton noDelayButton = new JButton("No Delay");
+	JButton toggle = new JButton("Toggle Dark Theme");
 	JButton reset;
 	JButton send;
-
+	/////////////////////////////////////////////////
 	JFrame frame;
-	JLabel l = new JLabel("if there would be no tidal how do i get tlop");
-	
-	
-	JComponent blah = new JComponent() {
-	};
-
-	GridBagConstraints constraints = new GridBagConstraints();
-
 	GridLayout gl;
+	/////////////////////////////////////////////////
+	final static boolean shouldFill = true;
+    final static boolean shouldWeightX = true;
+    final static boolean RIGHT_TO_LEFT = false;
+	int columnToBePressed = 1;
+	/////////////////////////////////////////////////
+	Boolean goodToSend = false;
+	Boolean darkMode = false;
+	String networkTablesString;
+	/////////////////////////////////////////////////
+	JLabel l = new JLabel("");
+	//JTextArea debug = new JTextArea("Hi memers!");
+	/////////////////////////////////////////////////
 	JComponent rowone = new JComponent() {
 	};
 	JComponent rowtwo = new JComponent() {
@@ -57,27 +70,15 @@ public class Selector extends JPanel implements ActionListener {
 	};
 	JComponent column5 = new JComponent() {
 	};
-	
+	/////////////////////////////////////////////////
 	GridOButtons ballToStealButtons;
 	GridOButtons oneBallDefenseTarget;
 	GridOButtons oneBallNoStealReturnTarget;
 	GridOButtons oneBallNoStealEndPosition;
-    
-	final static boolean shouldFill = true;
-    final static boolean shouldWeightX = true;
-    final static boolean RIGHT_TO_LEFT = false;
+	/////////////////////////////////////////////////
 
-	GridOButtons defenseToCross;
-	JTextArea debug = new JTextArea("Hi memers!");
-	JLabel label = new JLabel("What a meme for debugging!");
-	
-	ArrayList<JButton> allowed;
 
-	Boolean goodToSend = false;
 
-	String networkTablesString;
-
-	int columnToBePressed = 1;
 
 	private void removeAllinAllowed() {
 		Iterator<JButton> iter = allowed.iterator();
@@ -89,6 +90,13 @@ public class Selector extends JPanel implements ActionListener {
 	}
 	
 	public Selector() {
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        }
+        
         if (RIGHT_TO_LEFT) {
             this.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         }
@@ -113,13 +121,10 @@ public class Selector extends JPanel implements ActionListener {
 		ballToStealButtons = new GridOButtons(5);
 		oneBallDefenseTarget = new GridOButtons(4);
 		oneBallNoStealReturnTarget = new GridOButtons(4);
-
-		oneBallNoStealEndPosition = new GridOButtons(4); // We gonna need to fix
-															// this
-		// defenseToCross = new GridOButtons(4, column);
+		oneBallNoStealEndPosition = new GridOButtons(4); 
 
 		this.setLayout(new GridBagLayout());
-		setBackground(new Color(119, 12, 133));
+		setBackground(new Color(240,240,240));
 		this.setPreferredSize(new Dimension(1000, 500));
 
 		
@@ -151,28 +156,22 @@ public class Selector extends JPanel implements ActionListener {
 		c.gridy = 0;
 		c.insets = new Insets(0, 0, 0, 2);
 		column1.setLayout(new GridLayout(3, 1));
-		/////////////////////////
+		/////////////////////////////////////////////////
 		rowone.add(l);
-		rowone.add(debug);
+		//rowone.add(debug);
 		this.add(rowone,c);
-		/////////////////////////
-		//reset.setPreferredSize(new Dimension(50, 150));
+		/////////////////////////////////////////////////
 		rowthree.add(reset);
 		rowthree.add(send);
-		/////////////////////////
+		/////////////////////////////////////////////////
 		c.fill = GridBagConstraints.VERTICAL;
 		rowtwo.add(column1, c);
 		rowtwo.add(column2, c);
 		rowtwo.add(column3, c);
 		rowtwo.add(column4, c);
 		rowtwo.add(column5, c);
-		/////////////////////////
+		/////////////////////////////////////////////////
 
-		
-		//c.gridheight = 5000;
-		//c.fill = GridBagConstraints.HORIZONTAL;
- 		//c.fill = GridBagConstraints.VERTICAL;
-		
 		c.fill = GridBagConstraints.VERTICAL;
 		c.ipady = 10;      
 		c.weightx = 2.0;
@@ -204,17 +203,17 @@ public class Selector extends JPanel implements ActionListener {
 		}
 	}
 	
-	
-	
+	 
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
 		if (allowed.contains(e.getSource())) {
 			// valid press
 			if (columnToBePressed == 1) {
 				// one or two ball
 				if (e.getSource() == oneBall) {
+					highlightButtons.add(oneBall);
+					highlight(highlightButtons);
 					removeAllinAllowed();
 					//Set rows to number of buttons plus one to accommodate label
 					//gl.setRows(3);
@@ -225,6 +224,8 @@ public class Selector extends JPanel implements ActionListener {
 					networkTablesString = "OneBall:";
 				} else if (e.getSource() == twoBall) {
 					System.out.println("LIVING THE DREAM");
+					highlightButtons.add(twoBall);
+					highlight(highlightButtons);
 					removeAllinAllowed();
 					networkTablesString = "TwoBall:";
 					goodToSend = true;
@@ -236,6 +237,8 @@ public class Selector extends JPanel implements ActionListener {
 
 			} else if (columnToBePressed == 2) {
 				if (e.getSource() == steal) {
+					highlightButtons.add(steal);
+					highlight(highlightButtons);
 					removeAllinAllowed();
 					gl.setRows(7);
 					column3.setLayout(new GridLayout(7, 1));
@@ -248,6 +251,8 @@ public class Selector extends JPanel implements ActionListener {
 					}
 					addToCommandString("Steal:");
 				} else if (e.getSource() == noSteal) {
+					highlightButtons.add(noSteal);
+					highlight(highlightButtons);
 					removeAllinAllowed();
 					gl.setRows(3);
 					column3.setLayout(new GridLayout(3, 1));
@@ -263,17 +268,21 @@ public class Selector extends JPanel implements ActionListener {
 
 			} else if (columnToBePressed == 3) {
 				if (e.getSource() == delay) {
+					highlightButtons.add(delay);
+					highlight(highlightButtons);
 					removeAllinAllowed();
 					gl.setRows(5);
+					addToCommandString("Delay:");
 					column4.setLayout(new GridLayout(6, 1));
 					column4.add(new JLabel("Shoot pos?"));
 					for (JButton jbut : oneBallDefenseTarget.jbList) {
 						jbut.addActionListener(this);
 						System.out.println("Added Button: " + jbut.getText());
 						addButton(jbut, column4);
-						addToCommandString("Delay:");
 					}
 				}else if (e.getSource() == noDelayButton) {
+					highlightButtons.add(noDelayButton);
+					highlight(highlightButtons);
 						removeAllinAllowed();
 						gl.setRows(5);
 						column4.setLayout(new GridLayout(6, 1));
@@ -295,7 +304,8 @@ public class Selector extends JPanel implements ActionListener {
 					for (JButton j : ballToStealButtons.jbList) {
 						if (j == e.getSource()) {
 							addToCommandString(j.getText() + ":");
-							System.out.println(j.getText());
+							highlightButtons.add(j);
+							highlight(highlightButtons);
 						}
 					}
 				}
@@ -315,6 +325,8 @@ public class Selector extends JPanel implements ActionListener {
 					for (JButton j : oneBallDefenseTarget.jbList) {
 						if (j == e.getSource()) {
 							addToCommandString(j.getText() + ":");
+							highlightButtons.add(j);
+							highlight(highlightButtons);
 						}
 					}
 				}
@@ -329,12 +341,22 @@ public class Selector extends JPanel implements ActionListener {
 					for (JButton j : oneBallNoStealEndPosition.jbList) {
 						if (j == e.getSource()) {
 							addToCommandString(j.getText() + ":");
+							highlightButtons.add(j);
+							highlight(highlightButtons);
 						}
 					}
 				}
 			}
 
 		} else if (e.getSource() == reset) {
+			for(JButton j: highlightButtons){
+				j.setBackground(new JButton().getBackground());
+				j.setForeground(new JButton().getForeground());
+				j.setOpaque(false);
+				j.setContentAreaFilled(false);
+				j.setBorderPainted(true);
+			}
+			highlightButtons.removeAll(highlightButtons);
 			column2.removeAll();
 			column3.removeAll();
 			column4.removeAll();
@@ -352,11 +374,11 @@ public class Selector extends JPanel implements ActionListener {
 			System.out.println("Reset bruh");
 			goodToSend = false;
 			send.setEnabled(false);
-
 		} else if (e.getSource() == send) {
 			if (goodToSend) {
+				String fixedNetworkTablesString = networkTablesString.replaceAll(":", " ");
 				// push to network tables
-				l.setText(networkTablesString);
+				l.setText(fixedNetworkTablesString);
 				updateGraphics();
 				NetworkTable.getTable(Robot.getTable().toString());
 				Robot.getTable().putString("CommandString", networkTablesString);
@@ -366,9 +388,9 @@ public class Selector extends JPanel implements ActionListener {
 		}
 	}
 
-	public void addButton(JButton j, JComponent column) {
-		column.add(j);
-		allowed.add(j);
+	public void addButton(JButton button, JComponent column) {
+		column.add(button);
+		allowed.add(button);
 	}
 
 	public void updateGraphics() {
@@ -378,6 +400,17 @@ public class Selector extends JPanel implements ActionListener {
 		column3.updateUI();
 		column4.updateUI();
 		column5.updateUI();
+	}
+	
+	public void highlight(ArrayList<JButton> buttons){
+		for (JButton j : buttons) {
+		j.setBackground(Color.GREEN);
+		j.setForeground(Color.WHITE);
+		j.setOpaque(true);
+		j.setBorderPainted(false);
+		j.setFocusPainted(false);
+		j.setBorderPainted(false);
+		}
 	}
 
 	public void addToCommandString(String s) {
