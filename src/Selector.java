@@ -352,9 +352,8 @@ public class Selector extends JPanel implements ActionListener {
 			for(JButton j: highlightButtons){
 				j.setBackground(new JButton().getBackground());
 				j.setForeground(new JButton().getForeground());
-				j.setOpaque(false);
-				j.setContentAreaFilled(false);
-				j.setBorderPainted(true);
+	            j.setContentAreaFilled(true);
+	            j.setOpaque(true);
 			}
 			highlightButtons.removeAll(highlightButtons);
 			column2.removeAll();
@@ -404,12 +403,11 @@ public class Selector extends JPanel implements ActionListener {
 	
 	public void highlight(ArrayList<JButton> buttons){
 		for (JButton j : buttons) {
-		j.setBackground(Color.GREEN);
-		j.setForeground(Color.WHITE);
-		j.setOpaque(true);
-		j.setBorderPainted(false);
-		j.setFocusPainted(false);
-		j.setBorderPainted(false);
+		    j.setBackground(Color.GREEN);
+		    j.setForeground(Color.WHITE);
+            j.setContentAreaFilled(false);
+            j.setOpaque(true);
+
 		}
 	}
 
